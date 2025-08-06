@@ -248,3 +248,196 @@ It pauses the thread for a specified duration without releasing the lock.
 
 * `notify()`: Wakes one waiting thread.
 * `notifyAll()`: Wakes all waiting threads on the object.
+
+Intermediate
+---------------------------------------------------------
+🔹 JVM Internals
+Q: What are the different class loaders in Java?
+A: Java has three main class loaders:
+
+* **Bootstrap ClassLoader** – Loads core Java classes from rt.jar.
+* **Extension ClassLoader** – Loads classes from the ext directory.
+* **Application ClassLoader** – Loads classes from the classpath (i.e., user-defined classes).
+
+Q: What is the difference between Class.forName() and ClassLoader.loadClass()?
+A:
+
+* `Class.forName()` loads the class and initializes it (runs static blocks).
+* `ClassLoader.loadClass()` loads the class but doesn't initialize it until explicitly needed.
+
+Q: What is PermGen/Metaspace in Java?
+A:
+
+* **PermGen** (Permanent Generation) was used until Java 7 to store class metadata.
+* In **Java 8**, it was replaced by **Metaspace**, which grows dynamically and stores class metadata outside the heap.
+
+🔹 Memory Management
+Q: Explain the memory structure of JVM.
+A:
+
+* **Heap** – Stores objects and class instances.
+* **Stack** – Stores method calls and local variables.
+* **Method Area (MetaSpace)** – Stores class metadata, static variables, and bytecode.
+* **Program Counter Register** – Keeps track of the current instruction.
+* **Native Method Stack** – For native (non-Java) code.
+
+Q: What are strong, weak, soft, and phantom references?
+A:
+
+* **Strong**: Default reference, prevents GC.
+* **Soft**: Collected only when memory is low.
+* **Weak**: Collected during next GC cycle.
+* **Phantom**: Collected but accessible via a reference queue, used for cleanup.
+
+Q: How does Garbage Collection work? What are GC algorithms?
+A:
+GC reclaims memory by removing unused objects. Major algorithms:
+
+* **Serial GC** – Single-threaded, for small apps.
+* **Parallel GC** – Multi-threaded, high throughput.
+* **CMS (Concurrent Mark Sweep)** – Minimizes pause times.
+* **G1 (Garbage First)** – Splits heap into regions, balances pause time and throughput.
+* **Java 11+**: ZGC, Shenandoah – Low latency collectors.
+
+🔹 Advanced OOP Concepts
+Q: What is method hiding in Java?
+A: When a static method in a subclass has the same signature as in the superclass, it hides the superclass method. It’s not runtime polymorphism.
+
+Q: Can we override a private or static method?
+A:
+
+* **Private methods** can’t be overridden as they are not inherited.
+* **Static methods** are not overridden; they are hidden.
+
+Q: What is covariant return type?
+A: It allows an overridden method to return a subtype of the original method’s return type.
+
+🔹 Design and Best Practices
+Q: What is a Singleton class and how do you implement it?
+A: A class with only one instance across the application.
+
+```java
+class Singleton {
+    private static final Singleton instance = new Singleton();
+    private Singleton() {}
+    public static Singleton getInstance() {
+        return instance;
+    }
+}
+```
+
+Q: Explain the Factory Design Pattern in Java.
+A: The Factory Pattern provides an interface for creating objects but lets subclasses decide which class to instantiate. It promotes loose coupling.
+
+Q: What is immutability? How to create an immutable class?
+A:
+Immutability means object state can’t change once created.
+To make a class immutable:
+
+* Make it final.
+* Make fields private final.
+* No setters.
+* Return copies for mutable fields.
+
+🔹 Generics
+Q: What are generics in Java? Why are they used?
+A:
+Generics allow type-safe code and eliminate the need for casting.
+Example: `List<String>` ensures only strings are added.
+
+Q: What is type erasure in generics?
+A:
+At runtime, all generic type info is erased. `List<String>` and `List<Integer>` become just `List`.
+
+Q: Difference between ? extends T and ? super T?
+A:
+
+* `? extends T`: Accepts subtypes of T — used for reading.
+* `? super T`: Accepts supertypes of T — used for writing.
+
+🔹 Java 8 Features
+Q: What are functional interfaces?
+A: Interfaces with only one abstract method. Example: Runnable, Comparator, Function.
+
+Q: What is a lambda expression?
+A: A concise way to represent a functional interface:
+
+```java
+(int a, int b) -> a + b
+```
+
+Q: What are Streams and how are they used?
+A: Streams allow functional-style operations on collections.
+
+```java
+list.stream().filter(x -> x > 5).map(x -> x * 2).collect(Collectors.toList());
+```
+
+Q: What is the Optional class in Java?
+A: A container object to represent nullable values and avoid NullPointerException.
+
+🔹 Functional Programming
+Q: Difference between map() and flatMap()?
+A:
+
+* `map()` transforms each element.
+* `flatMap()` transforms and flattens nested structures.
+
+Q: How do you use filter(), collect(), and reduce() in streams?
+A:
+
+* `filter()` – filters elements.
+* `collect()` – terminal operation to gather results.
+* `reduce()` – aggregates elements (e.g., sum).
+
+🔹 Concurrency Enhancements
+Q: What is the Executor framework?
+A: It manages thread creation and reuse via ExecutorService.
+Example: `Executors.newFixedThreadPool(5)`
+
+Q: Difference between synchronized and ReentrantLock?
+A:
+
+* `synchronized` is simpler but less flexible.
+* `ReentrantLock` provides better control (tryLock, fairness, interruptibility).
+
+Q: Callable vs Runnable?
+A:
+
+* Runnable doesn't return a result or throw checked exceptions.
+* Callable returns a value and can throw exceptions.
+
+🔹 File I/O & Serialization
+Q: Difference between Serializable and Externalizable?
+A:
+
+* Serializable is marker-based and uses default serialization.
+* Externalizable lets you control serialization manually via `readExternal()` and `writeExternal()`.
+
+Q: What happens if a serialized class has a non-serializable field?
+A: A `NotSerializableException` is thrown unless the field is marked transient.
+
+🔹 Annotations & Reflection
+Q: What are annotations? Can you create custom annotations?
+A: Annotations provide metadata. Yes, custom annotations are possible using `@interface`.
+
+Q: How does reflection work in Java? What are its use cases?
+A: Reflection allows inspection and manipulation of classes at runtime.
+Use cases: frameworks (Spring), testing, serialization libraries.
+
+🔹 Practical Coding
+Q: How would you avoid a memory leak in Java?
+A:
+
+* Use weak references where applicable.
+* Avoid static references to large objects.
+* Close resources properly.
+* Monitor heap usage with profilers.
+
+Q: How would you handle concurrent modifications on a collection?
+A:
+
+* Use ConcurrentHashMap or CopyOnWriteArrayList.
+* Use Collections.synchronizedList() for simple cases.
+* Avoid modifying collections while iterating — use `iterator.remove()` if needed.
+
